@@ -1,0 +1,18 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: taskmanagement
+      POSTGRES_DB: taskmanagement
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+# http://localhost:8080/?pgsql=db&username=postgres&db=taskmanagement
