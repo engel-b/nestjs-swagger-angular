@@ -33,6 +33,12 @@ export class EditDialogComponent {
   }
 
   stopEdit(): void {
-    this.taskService.updateOneBaseTasksControllerTask(this.data.id, this.data);
+    this.taskService.updateOneBaseTasksControllerTask(this.data.id, this.data).subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (error) => {
+        console.log(error);
+      });
   }
 }
