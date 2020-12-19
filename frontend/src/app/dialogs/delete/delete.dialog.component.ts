@@ -10,13 +10,19 @@ import { TasksService } from '../../../../build/openapi';
 export class DeleteDialogComponent {
 
   constructor(public dialogRef: MatDialogRef<DeleteDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any, public taslService: TasksService) { }
+              @Inject(MAT_DIALOG_DATA) public data: any, public taskService: TasksService) { }
 
   onNoClick(): void {
     this.dialogRef.close();
   }
 
   confirmDelete(): void {
-//    this.dataService.deleteIssue(this.data.id);
+    this.taskService.deleteOneBaseTasksControllerTask(this.data.id).subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (error) => {
+        console.log(error);
+      });
   }
 }
