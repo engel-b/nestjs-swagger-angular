@@ -1,10 +1,8 @@
 {
-  "name": "nestjs-task-management",
+  "name": "taskmanagement-backend",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "author": "Björn Engel",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",

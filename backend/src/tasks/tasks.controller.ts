@@ -18,5 +18,5 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('tasks')
 @ApiTags('tasks')
 export class TasksController implements CrudController<Task> {
-    constructor(public service: TasksService) {}
+  constructor(public service: TasksService) {}
 }

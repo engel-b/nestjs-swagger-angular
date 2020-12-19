@@ -1,6 +1,7 @@
 {
-  "name": "mat-table-crud",
-  "version": "0.0.0",
+  "name": "taskmanagement-frontend",
+  "version": "0.0.1",
+  "author": "Björn Engel",
   "license": "MIT",
   "scripts": {
     "ng": "ng",

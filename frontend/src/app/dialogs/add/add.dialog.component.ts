@@ -36,8 +36,12 @@ export class AddDialogComponent {
   }
 
   public confirmAdd(): void {
-    console.log("confirmAdd()")
-    console.log(this.data);
-    this.taskService.createOneBaseTasksControllerTask(this.data);
+    this.taskService.createOneBaseTasksControllerTask(this.data).subscribe(
+      (data) => {
+        console.log(data);
+      },
+      (error) => {
+        console.log(error);
+      });
   }
 }
