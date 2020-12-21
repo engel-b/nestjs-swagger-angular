@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "mat-table-crud": {
+    "taskmanagement-frontend": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -55,18 +55,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "mat-table-crud:build"
+            "browserTarget": "taskmanagement-frontend:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "mat-table-crud:build:production"
+              "browserTarget": "taskmanagement-frontend:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "mat-table-crud:build"
+            "browserTarget": "taskmanagement-frontend:build"
           }
         },
         "test": {
@@ -100,7 +100,7 @@
         }
       }
     },
-    "mat-table-crud-e2e": {
+    "taskmanagement-frontend-e2e": {
       "root": "e2e",
       "sourceRoot": "e2e",
       "projectType": "application",
@@ -109,7 +109,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "mat-table-crud:serve"
+            "devServerTarget": "taskmanagement-frontend:serve"
           }
         },
         "lint": {
@@ -126,7 +126,7 @@
       }
     }
   },
-  "defaultProject": "mat-table-crud",
+  "defaultProject": "taskmanagement-frontend",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
