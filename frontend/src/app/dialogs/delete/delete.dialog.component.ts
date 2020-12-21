@@ -1,3 +1,4 @@
+import { TaskDto } from './../../../../build/openapi/model/taskDto';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Component, Inject } from '@angular/core';
 import { TasksService } from '../../../../build/openapi';
@@ -10,7 +11,7 @@ import { TasksService } from '../../../../build/openapi';
 export class DeleteDialogComponent {
 
   constructor(public dialogRef: MatDialogRef<DeleteDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: any, public taskService: TasksService) { }
+              @Inject(MAT_DIALOG_DATA) public data: TaskDto, public taskService: TasksService) { }
 
   onNoClick(): void {
     this.dialogRef.close();

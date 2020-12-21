@@ -20,6 +20,7 @@ import { EditDialogComponent } from './dialogs/edit/edit.dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.dialog.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
 
 
 @NgModule({
@@ -45,6 +46,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MatPaginatorModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
   ],
   entryComponents: [
     AddDialogComponent,

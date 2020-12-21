@@ -1,16 +1,15 @@
 import { TasksDataSource } from './task.datasource';
-import { GetTasksDto } from './../../build/openapi/model/getTasksDto';
 import { TaskDto } from './../../build/openapi/model/taskDto';
 import { TasksService } from './../../build/openapi/api/tasks.service';
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { AddDialogComponent } from './dialogs/add/add.dialog.component';
 import { EditDialogComponent } from './dialogs/edit/edit.dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.dialog.component';
 import { merge, fromEvent } from "rxjs";
-import { debounceTime, distinctUntilChanged, startWith, tap, delay } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -29,157 +28,91 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   constructor(public dialog: MatDialog,
     public taskService: TasksService) {
-}
+  }
 
-ngOnInit(): void {
-//  this.task = this.route.snapshot.data["course"];
-  this.dataSource = new TasksDataSource(this.taskService);
-  this.dataSource.loadTasks();
-}
+  ngOnInit(): void {
+    //  this.task = this.route.snapshot.data["course"];
+    this.dataSource = new TasksDataSource(this.taskService);
+    this.dataSource.loadTasks();
+  }
 
-ngAfterViewInit() {
+  ngAfterViewInit() {
 
-  this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
+    this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
 
-  fromEvent(this.filter.nativeElement,'keyup')
+    fromEvent(this.filter.nativeElement, 'keyup')
       .pipe(
-          debounceTime(150),
-          distinctUntilChanged(),
-          tap(() => {
-              this.paginator.pageIndex = 0;
-              this.loadTasksPage();
-          })
+        debounceTime(150),
+        distinctUntilChanged(),
+        tap(() => {
+          this.paginator.pageIndex = 0;
+          this.loadTasksPage();
+        })
       )
       .subscribe();
 
-  merge(this.sort.sortChange, this.paginator.page)
-  .pipe(
-      tap(() => this.loadTasksPage())
-  )
-  .subscribe();
-}
+    merge(this.sort.sortChange, this.paginator.page)
+      .pipe(
+        tap(() => this.loadTasksPage())
+      )
+      .subscribe();
+  }
 
-loadTasksPage() {
-  this.dataSource.loadTasks(
+  loadTasksPage() {
+    this.dataSource.loadTasks(
       this.filter.nativeElement.value,
       this.sort.active,
       this.sort.direction,
       this.paginator.pageIndex + 1,
       this.paginator.pageSize);
-}
+  }
 
   refresh(): void {
     this.loadTasksPage();
   }
-/*
-  addNew(): void {
-    const dialogRef = this.dialog.open(AddDialogComponent, {
-      data: {}
-    });
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log("result: " + result);
-      if (result === 1) {
-        this.refreshTable();
-      }
-    });
-  }
-*/
-/*
-  startEdit(i: number, id: number, title: string, description: string, status: string, userid: string): void {
-    this.id = id;
-    // index row is used just for debugging proposes and can be removed
-    this.index = i;
-    console.log(this.index);
-    const dialogRef = this.dialog.open(EditDialogComponent, {
-      data: {id: id, title: title, description: description, status: status, userid: userid}
-    });
+  add() {
+    const dialogConfig = new MatDialogConfig();
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === 1) {
-        // When using an edit things are little different, firstly we find record inside DataService by id
-// FIXME        const foundIndex = this.exampleDatabase.dataChange.value.findIndex(x => x.id === this.id);
-        // Then you update that record using data from dialogData (values you enetered)
-// FIXME        this.exampleDatabase.dataChange.value[foundIndex] = this.dataService.getDialogData();
-        // And lastly refresh table
-        this.refreshTable();
-      }
-    });
-  }
-  */
-/*
-  startEdit({title, description, status}: TaskDto) {
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = { data:  {} };
 
-  const dialogConfig = new MatDialogConfig();
+    const dialogRef = this.dialog.open(AddDialogComponent, dialogConfig);
 
-  dialogConfig.disableClose = true;
-  dialogConfig.autoFocus = true;
-
-  dialogConfig.data = {
-      description, longDescription, category
-  };
-
-  const dialogRef = this.dialog.open(CourseDialogComponent,
-      dialogConfig);
-
-
-  dialogRef.afterClosed().subscribe(
-      val => console.log("Dialog output:", val)
-  );
-
-}*/
-  /*
-  deleteItem(i: number, id: number, title: string, description: string, status: string): void {
-    this.index = i;
-    this.id = id;
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      data: {id: id, title: title, description: description, status: status}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === 1) {
-// FIXME        const foundIndex = this.exampleDatabase.dataChange.value.findIndex(x => x.id === this.id);
-        // for delete we use splice in order to remove single object from DataService
-// FIXME        this.exampleDatabase.dataChange.value.splice(foundIndex, 1);
-        this.refreshTable();
-      }
-    });
+    dialogRef.afterClosed().subscribe(
+      val => this.refresh()
+    );
   }
 
+  edit(task: TaskDto) {
+    const dialogConfig = new MatDialogConfig();
 
-  private refreshTable(): void {
-    // Refreshing table using paginator
-    // Thanks yeager-j for tips
-    // https://github.com/marinantonio/angular-mat-table-crud/issues/12
-    this.paginator._changePageSize(this.paginator.pageSize);
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = task;
+
+    const dialogRef = this.dialog.open(EditDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(
+      val => this.refresh()
+    );
   }
-*/
 
-  /*   // If you don't need a filter or a pagination this can be simplified, you just use code from else block
-    // OLD METHOD:
-    // if there's a paginator active we're using it for refresh
-    if (this.dataSource._paginator.hasNextPage()) {
-      this.dataSource._paginator.nextPage();
-      this.dataSource._paginator.previousPage();
-      // in case we're on last page this if will tick
-    } else if (this.dataSource._paginator.hasPreviousPage()) {
-      this.dataSource._paginator.previousPage();
-      this.dataSource._paginator.nextPage();
-      // in all other cases including active filter we do it like this
-    } else {
-      this.dataSource.filter = '';
-      this.dataSource.filter = this.filter.nativeElement.value;
-    }*/
+  remove(task: TaskDto) {
+    const dialogConfig = new MatDialogConfig();
 
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = task;
 
-/*
-  public loadData(): void {
-   this.taskService.getManyBaseTasksControllerTask().subscribe((result) => {
-     console.log(result);
-     this.dataSource = result;
-   });
+    const dialogRef = this.dialog.open(DeleteDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(
+      val => this.refresh()
+    );
   }
-*/
+
   onRowClick(row: any): void {
     console.log(row);
   }
