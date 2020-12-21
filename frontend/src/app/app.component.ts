@@ -1,14 +1,16 @@
+import { TasksDataSource } from './task.datasource';
 import { GetTasksDto } from './../../build/openapi/model/getTasksDto';
 import { TaskDto } from './../../build/openapi/model/taskDto';
 import { TasksService } from './../../build/openapi/api/tasks.service';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { AddDialogComponent } from './dialogs/add/add.dialog.component';
 import { EditDialogComponent } from './dialogs/edit/edit.dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.dialog.component';
+import { merge, fromEvent } from "rxjs";
+import { debounceTime, distinctUntilChanged, startWith, tap, delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -16,34 +18,61 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.dialog.component'
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent implements OnInit {
-  displayedColumns = ['id', 'title', 'description', 'status', 'userid', 'actions'];
-//  exampleDatabase: DataService | null;
-//  dataSource: ExampleDataSource | null;
-  dataSource: GetTasksDto = <GetTasksDto>{};
+export class AppComponent implements OnInit, AfterViewInit {
+  displayedColumns = ['id', 'title', 'description', 'status', 'actions'];
+  dataSource: TasksDataSource; // GetTasksDto; // = <GetTasksDto>{};
   task: TaskDto;
-//  public persons: Observable<ContactPerson[]>;
-  index: number;
-  id: number;
 
-  constructor(public httpClient: HttpClient,
-              public dialog: MatDialog,
-              public taskService: TasksService) {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild('filter') filter: ElementRef;
+
+  constructor(public dialog: MatDialog,
+    public taskService: TasksService) {
+}
+
+ngOnInit(): void {
+//  this.task = this.route.snapshot.data["course"];
+  this.dataSource = new TasksDataSource(this.taskService);
+  this.dataSource.loadTasks();
+}
+
+ngAfterViewInit() {
+
+  this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
+
+  fromEvent(this.filter.nativeElement,'keyup')
+      .pipe(
+          debounceTime(150),
+          distinctUntilChanged(),
+          tap(() => {
+              this.paginator.pageIndex = 0;
+              this.loadTasksPage();
+          })
+      )
+      .subscribe();
+
+  merge(this.sort.sortChange, this.paginator.page)
+  .pipe(
+      tap(() => this.loadTasksPage())
+  )
+  .subscribe();
+}
+
+loadTasksPage() {
+  this.dataSource.loadTasks(
+      this.filter.nativeElement.value,
+      this.sort.active,
+      this.sort.direction,
+      this.paginator.pageIndex + 1,
+      this.paginator.pageSize);
+}
+
+  refresh(): void {
+    this.loadTasksPage();
   }
-
-  @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
-  @ViewChild('filter',  {static: true}) filter: ElementRef;
-
-  ngOnInit() {
-    this.loadData();
-  }
-
-  refresh() {
-    this.loadData();
-  }
-
-  addNew() {
+/*
+  addNew(): void {
     const dialogRef = this.dialog.open(AddDialogComponent, {
       data: {}
     });
@@ -55,8 +84,9 @@ export class AppComponent implements OnInit {
       }
     });
   }
-
-  startEdit(i: number, id: number, title: string, description: string, status: string, userid: string) {
+*/
+/*
+  startEdit(i: number, id: number, title: string, description: string, status: string, userid: string): void {
     this.id = id;
     // index row is used just for debugging proposes and can be removed
     this.index = i;
@@ -76,8 +106,30 @@ export class AppComponent implements OnInit {
       }
     });
   }
+  */
+/*
+  startEdit({title, description, status}: TaskDto) {
 
-  deleteItem(i: number, id: number, title: string, description: string, status: string) {
+  const dialogConfig = new MatDialogConfig();
+
+  dialogConfig.disableClose = true;
+  dialogConfig.autoFocus = true;
+
+  dialogConfig.data = {
+      description, longDescription, category
+  };
+
+  const dialogRef = this.dialog.open(CourseDialogComponent,
+      dialogConfig);
+
+
+  dialogRef.afterClosed().subscribe(
+      val => console.log("Dialog output:", val)
+  );
+
+}*/
+  /*
+  deleteItem(i: number, id: number, title: string, description: string, status: string): void {
     this.index = i;
     this.id = id;
     const dialogRef = this.dialog.open(DeleteDialogComponent, {
@@ -95,13 +147,13 @@ export class AppComponent implements OnInit {
   }
 
 
-  private refreshTable() {
+  private refreshTable(): void {
     // Refreshing table using paginator
     // Thanks yeager-j for tips
     // https://github.com/marinantonio/angular-mat-table-crud/issues/12
     this.paginator._changePageSize(this.paginator.pageSize);
   }
-
+*/
 
   /*   // If you don't need a filter or a pagination this can be simplified, you just use code from else block
     // OLD METHOD:
@@ -120,19 +172,15 @@ export class AppComponent implements OnInit {
     }*/
 
 
-
-  public loadData() {
-    /*
-    fromEvent(this.filter.nativeElement, 'keyup')
-      // .debounceTime(150)
-      // .distinctUntilChanged()
-      .subscribe(() => {
-        this.tasks = this.taskService.getManyBaseTasks2ControllerTask();
-      });
-    */
+/*
+  public loadData(): void {
    this.taskService.getManyBaseTasksControllerTask().subscribe((result) => {
      console.log(result);
      this.dataSource = result;
    });
+  }
+*/
+  onRowClick(row: any): void {
+    console.log(row);
   }
 }
