@@ -10,6 +10,7 @@ import { EditDialogComponent } from './dialogs/edit/edit.dialog.component';
 import { DeleteDialogComponent } from './dialogs/delete/delete.dialog.component';
 import { merge, fromEvent } from "rxjs";
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-root',
@@ -18,8 +19,9 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 })
 
 export class AppComponent implements OnInit, AfterViewInit {
-  displayedColumns = ['id', 'title', 'description', 'status', 'actions'];
-  dataSource: TasksDataSource; // GetTasksDto; // = <GetTasksDto>{};
+  displayedColumns = ['select', 'id', 'title', 'description', 'status', 'actions'];
+  selection = new SelectionModel<TaskDto>(true, []);
+  dataSource: TasksDataSource;
   task: TaskDto;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -31,7 +33,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    //  this.task = this.route.snapshot.data["course"];
     this.dataSource = new TasksDataSource(this.taskService);
     this.dataSource.loadTasks();
   }
@@ -116,4 +117,26 @@ export class AppComponent implements OnInit, AfterViewInit {
   onRowClick(row: any): void {
     console.log(row);
   }
+
+    /** Whether the number of selected elements matches the total number of rows. */
+    isAllSelected() {
+      const numSelected = this.selection.selected.length;
+      const numRows = this.dataSource.count;
+      return numSelected === numRows;
+    }
+
+    /** The label for the checkbox on the passed row */
+  checkboxLabel(row?: TaskDto): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.id + 1}`;
+  }
+
+    /** Selects all rows if they are not all selected; otherwise clear selection. */
+    masterToggle() {
+      this.isAllSelected() ?
+          this.selection.clear() :
+          this.dataSource.tasksSubject.value.forEach(row => this.selection.select(row));
+    }
 }

@@ -8,7 +8,7 @@ import { CollectionViewer } from '@angular/cdk/collections';
 
 export class TasksDataSource implements DataSource<TaskDto> {
 
-  private tasksSubject = new BehaviorSubject<TaskDto[]>([]);
+  tasksSubject = new BehaviorSubject<TaskDto[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
 
   public count: number;

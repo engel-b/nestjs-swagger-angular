@@ -21,7 +21,7 @@ import { DeleteDialogComponent } from './dialogs/delete/delete.dialog.component'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
-
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -47,6 +47,7 @@ import { MatSelectModule } from '@angular/material/select';
     ReactiveFormsModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    MatCheckboxModule,
   ],
   entryComponents: [
     AddDialogComponent,
